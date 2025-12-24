@@ -7,7 +7,7 @@ How to use (quick tutorial)
 
   Download or clone this repo.
 
-  Open index.html in any modern browser (Chrome, Safari, Edge, Firefox).
+  Open resin-timer-0_0##.html in any modern browser (Chrome, Safari, Edge, Firefox).
 
   Works offline after it’s loaded.
 
