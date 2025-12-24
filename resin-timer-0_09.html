@@ -1,0 +1,1326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resin Timer</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --muted:#9bb0c6;
+      --text:#eaf2ff;
+      --border:rgba(255,255,255,.10);
+      --warn:#ffb020;
+      --bad:#ff5c5c;
+      --ok:#5dff9f;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --accent:#4aa3ff;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(74,163,255,.14), transparent 60%),
+                  radial-gradient(800px 500px at 90% 0%, rgba(93,255,159,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 14px 14px 10px 14px;
+      background: rgba(11,15,20,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    header h1{ margin:0; font-size:16px; letter-spacing:.2px; }
+    header .sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    main{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px;
+      padding-bottom: 120px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card{
+      background: rgba(18,26,35,.86);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{ margin:0 0 10px 0; font-size:14px; }
+    .muted{ color: var(--muted); font-size:12px; }
+    .tiny{ font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .pill.badge-warn{
+      border-color: rgba(255,176,32,.55);
+      background: rgba(255,176,32,.12);
+      color: rgba(255,255,255,.92);
+      font-weight: 650;
+    }
+
+    .mono{
+      font-variant-numeric: tabular-nums;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    label{ display:block; font-size:12px; color: var(--muted); margin-bottom: 6px; }
+    input, select, textarea{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      outline: none;
+      font-size: 16px;
+    }
+    textarea{ min-height: 120px; resize: vertical; }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(74,163,255,.75);
+      box-shadow: 0 0 0 3px rgba(74,163,255,.16);
+    }
+
+    .grid3{ display:grid; gap:10px; grid-template-columns: 1fr; }
+    @media (min-width: 720px){ .grid3{ grid-template-columns: 1.2fr 1fr 1fr; } }
+
+    .grid2{ display:grid; gap:10px; grid-template-columns: 1fr; }
+    @media (min-width: 720px){ .grid2{ grid-template-columns: 1fr 1fr; } }
+
+    .gridAuto{ display:grid; gap:10px; grid-template-columns: 1fr; }
+    @media (min-width: 720px){ .gridAuto{ grid-template-columns: repeat(3, 1fr); } }
+
+    .status{
+      margin-top:10px;
+      border-left: 4px solid var(--warn);
+      background: rgba(255,176,32,.08);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .status.bad{ border-left-color: rgba(255,92,92,.75); background: rgba(255,92,92,.08); }
+    .status.ok{ border-left-color: var(--ok); background: rgba(93,255,159,.07); }
+    .status ul{ margin: 6px 0 0 0; padding-left: 18px; }
+
+    details.layer{
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(15,22,32,.60);
+    }
+    details.layer[open]{ background: rgba(15,22,32,.85); }
+    summary{
+      list-style: none;
+      cursor: pointer;
+      padding: 12px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .sumLeft{ display:flex; align-items:center; gap:10px; min-width: 0; }
+    .chev{
+      width: 10px; height: 10px;
+      border-right: 2px solid rgba(255,255,255,.45);
+      border-bottom: 2px solid rgba(255,255,255,.45);
+      transform: rotate(-45deg);
+      transition: transform .15s ease;
+      flex: 0 0 auto;
+      margin-left: 2px;
+    }
+    details[open] .chev{ transform: rotate(45deg); }
+    .layerTitle{ font-weight: 650; font-size: 14px; white-space: nowrap; }
+    .layerMeta{
+      color: var(--muted);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .layerBody{ padding: 0 12px 12px 12px; display: grid; gap: 10px; }
+
+    /* Dense hopper grid */
+    .hopperGrid{
+      display:grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile */
+    }
+    @media (min-width: 720px){
+      .hopperGrid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    .hopperTile{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      padding: 8px;
+      display:grid;
+      gap: 6px;
+    }
+    .tileHeader{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .tileHeader .hopperTag{
+      display:inline-flex;
+      align-items:center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.92);
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .tileFooter{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+    .tileFooter .mode{ opacity: .9; white-space: nowrap; }
+
+    .hopperTile label{ margin-bottom: 4px; font-size: 11px; }
+    .hopperTile input{
+      padding: 10px 10px;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    /* Results */
+    .resultCard{ display:grid; gap: 10px; }
+    .resultGrid{ display:grid; gap: 8px; }
+    .resultRow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      transition: opacity .12s ease, filter .12s ease;
+    }
+    .resultRow .meta{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+    .resultRow.done{
+      opacity: 0.42;
+      filter: grayscale(1);
+    }
+
+    .toggleRow{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      margin-top: 10px;
+    }
+    .switch{
+      position: relative;
+      width: 48px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .switch::after{
+      content:"";
+      position:absolute;
+      top: 3px; left: 3px;
+      width: 22px; height: 22px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+      transition: transform .15s ease;
+    }
+    .switch.on{
+      background: rgba(74,163,255,.22);
+      border-color: rgba(74,163,255,.45);
+    }
+    .switch.on::after{ transform: translateX(20px); }
+
+    .checkWrap{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      justify-content:flex-end;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      user-select: none;
+    }
+    .checkWrap input{
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      margin: 0;
+      border-radius: 6px;
+    }
+
+    .actionBar{
+      position: fixed;
+      left: 0; right: 0; bottom: 28px;
+      z-index: 40;
+      padding: 10px 12px 12px 12px;
+      background: rgba(11,15,20,.92);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .btnRow{
+      max-width: 980px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 10px;
+    }
+    button{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(74,163,255,.16);
+      color: var(--text);
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button.secondary{ background: rgba(255,255,255,.06); }
+    button.danger{ background: rgba(255,92,92,.12); }
+
+    .hr{
+      height:1px;
+      background: rgba(255,255,255,.10);
+      margin: 12px 0;
+    }
+
+    footer{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 41;
+      padding: 6px 12px;
+      background: rgba(11,15,20,.92);
+      border-top: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Resin Timer</h1>
+  <div class="sub">Autosaves locally • Per-layer hopper splits + weights • Results sorted by upcoming time • Recipes export/import.</div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>1) Line setup</h2>
+
+    <div class="grid3">
+      <div>
+        <label for="lineRate">Line rate (lb/hr)</label>
+        <input id="lineRate" type="number" min="0" step="0.01" value="0" />
+        <div class="tiny">Example: 1200</div>
+      </div>
+
+      <div>
+        <label for="lineType">Line type</label>
+        <select id="lineType">
+          <option value="1">1-layer</option>
+          <option value="3">3-layer</option>
+          <option value="5">5-layer</option>
+        </select>
+        <div class="tiny">Layers shown below depend on line type.</div>
+      </div>
+
+      <div>
+        <label for="pctMode">Percent mode</label>
+        <select id="pctMode">
+          <option value="100">Inputs are % (sum to 100)</option>
+          <option value="1">Inputs are fractions (sum to 1.0)</option>
+        </select>
+        <div class="tiny">Leave on % unless you prefer 0.25 style.</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <label for="changeoverTime">Changeover time (deadline)</label>
+        <input id="changeoverTime" type="time" />
+        <div class="tiny">Used for “Start by”. Blank means sorting uses “Time to empty”.</div>
+      </div>
+      <div>
+        <label>Downcomer offset (minutes, per layer)</label>
+        <div id="offsetInputs" class="gridAuto"></div>
+        <div class="tiny">Adds time for downcomer run-down. <strong>For line 9, leave at 0.</strong></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <h2 style="margin:0 0 8px 0; font-size:14px;">Layer split</h2>
+      <div class="muted">Enter % of total line rate assigned to each layer.</div>
+      <div id="layerInputs" class="grid2" style="margin-top:10px"></div>
+    </div>
+
+    <div id="statusBox"></div>
+  </section>
+
+  <section class="card" id="inputsSection">
+    <h2>2) Hopper splits + weights (per layer)</h2>
+    <div class="muted">Dense tiles. Tip: Enter Split → Enter → Weight → Enter → next Split.</div>
+    <div id="layersArea" style="margin-top:10px; display:grid; gap:10px;"></div>
+  </section>
+
+  <section class="card" id="resultsSection">
+    <h2>3) Results</h2>
+    <div class="muted">Sorted by upcoming time (Start by if changeover is set; otherwise Time to empty).</div>
+
+    <div class="toggleRow">
+      <div>
+        <div style="font-weight:700; font-size:13px;">Show all hoppers</div>
+        <div class="muted" style="margin-top:2px;">Shows missing fields as badges.</div>
+      </div>
+      <div id="showAllSwitch" class="switch" role="switch" aria-checked="false" tabindex="0" title="Show all hoppers"></div>
+    </div>
+
+    <div id="resultsArea" class="resultCard" style="margin-top:10px"></div>
+  </section>
+
+  <section class="card" id="recipesSection">
+    <h2>4) Recipes (named configs)</h2>
+    <div class="muted">Save/load typical setups. Export/import JSON for sharing.</div>
+
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <label for="configName">Config name</label>
+        <input id="configName" type="text" placeholder="e.g. Line 9 typical" />
+        <div class="tiny">Used when saving or exporting.</div>
+      </div>
+      <div>
+        <label for="savedConfigs">Saved configs</label>
+        <select id="savedConfigs"></select>
+        <div class="tiny">Load one to overwrite current inputs.</div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:10px">
+      <button id="saveConfigBtn">Save / Update config</button>
+      <button id="loadConfigBtn" class="secondary">Load selected config</button>
+    </div>
+
+    <div class="grid2" style="margin-top:10px">
+      <button id="renameConfigBtn" class="secondary">Rename selected</button>
+      <button id="deleteConfigBtn" class="danger">Delete selected</button>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="grid2">
+      <button id="exportConfigBtn" class="secondary">Export selected (copy JSON)</button>
+      <button id="importConfigBtn" class="secondary">Import JSON (paste)</button>
+    </div>
+
+    <div id="importArea" style="display:none; margin-top:10px;">
+      <label for="importJson">Paste JSON here</label>
+      <textarea id="importJson" placeholder='{"name":"Line 9 typical","payload":{...}}'></textarea>
+      <div class="grid2" style="margin-top:10px;">
+        <button id="doImportBtn">Import now</button>
+        <button id="cancelImportBtn" class="secondary">Cancel</button>
+      </div>
+      <div class="tiny">Import will add/update a named config and can also load it immediately.</div>
+    </div>
+
+    <div id="recipeStatus" style="margin-top:10px"></div>
+  </section>
+</main>
+
+<div class="actionBar">
+  <div class="btnRow">
+    <button id="recalcBtn">Recalculate</button>
+    <button id="copyBtn" class="secondary">Copy CSV</button>
+    <button id="resetBtn" class="danger">Reset</button>
+  </div>
+</div>
+
+<footer id="footerVer"></footer>
+
+<script>
+  const APP_VERSION = "0.02-results-sorted-pumpoff";
+
+  const LS_SESSION_KEY = "resinTimer.session.resultsSortedPumpOff.v0.02";
+  const LS_CONFIGS_KEY = "resinTimer.configs.resultsSortedPumpOff.v0.02";
+
+  const HOPPERS_PER_LAYER = 6;
+
+  const state = {
+    lineRate: 0,
+    lineType: 3,
+    pctModeDivisor: 100,
+    changeoverTime: "",
+    offsets: {},
+    layers: [],
+    showAllResults: false
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  function clampNum(x){ const n = Number(x); return Number.isFinite(n) ? n : 0; }
+  function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
+  function fmtNum(n, d=2){ return Number.isFinite(n) ? n.toFixed(d) : "—"; }
+  function hoursToHHMM(h){
+    if (!Number.isFinite(h) || h < 0) return "—";
+    const total = Math.floor(h*60 + 0.5);
+    const hh = Math.floor(total/60);
+    const mm = total % 60;
+    return `${hh}h ${String(mm).padStart(2,"0")}m`;
+  }
+  function minutesToHHMM(mins){
+    if (!Number.isFinite(mins) || mins < 0) return "—";
+    const total = Math.floor(mins + 0.5);
+    const hh = Math.floor(total/60);
+    const mm = total % 60;
+    return `${hh}h ${String(mm).padStart(2,"0")}m`;
+  }
+
+  function parseChangeoverDate(hhmm){
+    if (!hhmm) return null;
+    const m = /^(\d{2}):(\d{2})$/.exec(hhmm);
+    if (!m) return null;
+    const hh = Number(m[1]), mm = Number(m[2]);
+    const now = new Date();
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+    if (d.getTime() < now.getTime() - 60*1000) d.setDate(d.getDate()+1);
+    return d;
+  }
+  function fmtTime(dateObj, baseDateObj){
+    if (!dateObj) return "—";
+    const t = dateObj.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+    if (!baseDateObj) return t;
+    const sameDay =
+      dateObj.getFullYear()===baseDateObj.getFullYear() &&
+      dateObj.getMonth()===baseDateObj.getMonth() &&
+      dateObj.getDate()===baseDateObj.getDate();
+    return sameDay ? t : `${t} (+1d)`;
+  }
+
+  function hopperEntered(h){ return clampNum(h.pct) > 0 && clampNum(h.weight) > 0; }
+  function missingFlags(h){
+    return { missingSplit: clampNum(h.pct) <= 0, missingWeight: clampNum(h.weight) <= 0 };
+  }
+
+  function setStatus(html){ $("statusBox").innerHTML = html || ""; }
+  function statusMessage(messages){
+    if (!messages.length) return "";
+    const hasBad = messages.some(m=>m.type==="bad");
+    const hasWarn = messages.some(m=>m.type==="warn");
+    const cls = hasBad ? "status bad" : (hasWarn ? "status" : "status ok");
+    const title = hasBad ? "Fix before trusting results:" : (hasWarn ? "Heads up:" : "Looks good:");
+    const items = messages.map(m=>`<li>${m.text}</li>`).join("");
+    return `<div class="${cls}"><div style="font-weight:700;margin-bottom:6px">${title}</div><ul>${items}</ul></div>`;
+  }
+
+  function snapshotPayload(){
+    return {
+      version: APP_VERSION,
+      lineRate: state.lineRate,
+      lineType: state.lineType,
+      pctModeDivisor: state.pctModeDivisor,
+      changeoverTime: state.changeoverTime,
+      offsets: state.offsets,
+      layers: state.layers,
+      showAllResults: state.showAllResults
+    };
+  }
+
+  function applyPayload(payload, {rebuildUI=true} = {}){
+    if (!payload || typeof payload !== "object") return;
+
+    state.lineRate = clampNum(payload.lineRate);
+    state.lineType = [1,3,5].includes(Number(payload.lineType)) ? Number(payload.lineType) : 3;
+    state.pctModeDivisor = Number(payload.pctModeDivisor) === 1 ? 1 : 100;
+    state.changeoverTime = payload.changeoverTime || "";
+    state.offsets = payload.offsets || {};
+    state.showAllResults = !!payload.showAllResults;
+
+    const names = getLayerNamesForType(state.lineType);
+    const oldLayers = Array.isArray(payload.layers) ? payload.layers : [];
+
+    state.layers = names.map(name => {
+      const found = oldLayers.find(x => x?.name === name) || {};
+      const layerPct = clampNum(found.layerPct);
+      const hoppers = Array.from({length:HOPPERS_PER_LAYER}, (_,i)=>{
+        const fh = found?.hoppers?.[i] || {};
+        return {
+          pct: clampNum(fh.pct),
+          weight: clampNum(fh.weight),
+          pumpOff: !!fh.pumpOff
+        };
+      });
+      return { name, layerPct, hoppers };
+    });
+
+    const nextOffsets = {};
+    names.forEach(n => nextOffsets[n] = clampNum(state.offsets?.[n] ?? 0));
+    state.offsets = nextOffsets;
+
+    $("lineRate").value = state.lineRate;
+    $("lineType").value = String(state.lineType);
+    $("pctMode").value = String(state.pctModeDivisor);
+    $("changeoverTime").value = state.changeoverTime;
+
+    if (rebuildUI) rebuildUIFromState();
+    else { validateAndCompute(); syncShowAllSwitch(); }
+  }
+
+  function saveSession(){
+    try{ localStorage.setItem(LS_SESSION_KEY, JSON.stringify(snapshotPayload())); }catch(e){}
+  }
+  function loadSession(){
+    try{
+      const raw = localStorage.getItem(LS_SESSION_KEY);
+      if (!raw) return false;
+      applyPayload(JSON.parse(raw), {rebuildUI:true});
+      return true;
+    }catch(e){ return false; }
+  }
+  function clearSession(){
+    try{ localStorage.removeItem(LS_SESSION_KEY); }catch(e){}
+  }
+
+  // Recipes
+  function readConfigs(){
+    try{
+      const raw = localStorage.getItem(LS_CONFIGS_KEY);
+      if (!raw) return {};
+      const obj = JSON.parse(raw);
+      return (obj && typeof obj === "object") ? obj : {};
+    }catch(e){ return {}; }
+  }
+  function writeConfigs(obj){
+    try{ localStorage.setItem(LS_CONFIGS_KEY, JSON.stringify(obj)); }catch(e){}
+  }
+  function recipeStatus(msg, type="ok"){
+    const cls = type==="bad" ? "status bad" : (type==="warn" ? "status" : "status ok");
+    $("recipeStatus").innerHTML = `<div class="${cls}"><div style="font-weight:800">${msg}</div></div>`;
+    setTimeout(()=>{ $("recipeStatus").innerHTML = ""; }, 4500);
+  }
+  function refreshConfigDropdown(selectName){
+    const configs = readConfigs();
+    const sel = $("savedConfigs");
+    const names = Object.keys(configs).sort((a,b)=>a.localeCompare(b));
+    sel.innerHTML = "";
+    if (names.length === 0){
+      const o = document.createElement("option");
+      o.value = "";
+      o.textContent = "— none saved —";
+      sel.appendChild(o);
+      return;
+    }
+    names.forEach(n=>{
+      const o = document.createElement("option");
+      o.value = n;
+      o.textContent = n;
+      sel.appendChild(o);
+    });
+    if (selectName && names.includes(selectName)) sel.value = selectName;
+  }
+  function normalizeConfigName(name){
+    return (name || "").trim().replace(/\s+/g, " ");
+  }
+  function saveNamedConfig(){
+    const name = normalizeConfigName($("configName").value);
+    if (!name){ recipeStatus("Please enter a config name first.", "warn"); return; }
+    const configs = readConfigs();
+    configs[name] = snapshotPayload();
+    writeConfigs(configs);
+    refreshConfigDropdown(name);
+    recipeStatus(`Saved config: "${name}"`, "ok");
+  }
+  function loadSelectedConfig(){
+    const sel = $("savedConfigs").value;
+    if (!sel){ recipeStatus("No config selected.", "warn"); return; }
+    const configs = readConfigs();
+    const payload = configs[sel];
+    if (!payload){ recipeStatus("Selected config not found.", "bad"); return; }
+    applyPayload(payload, {rebuildUI:true});
+    $("configName").value = sel;
+    recipeStatus(`Loaded config: "${sel}"`, "ok");
+    saveSession();
+  }
+  function renameSelectedConfig(){
+    const oldName = $("savedConfigs").value;
+    if (!oldName){ recipeStatus("No config selected to rename.", "warn"); return; }
+    const newName = normalizeConfigName($("configName").value);
+    if (!newName){ recipeStatus("Enter the new name in the Config name field.", "warn"); return; }
+    const configs = readConfigs();
+    if (!configs[oldName]){ recipeStatus("Selected config not found.", "bad"); return; }
+    if (oldName !== newName && configs[newName]){
+      recipeStatus("A config with that name already exists.", "warn");
+      return;
+    }
+    configs[newName] = configs[oldName];
+    delete configs[oldName];
+    writeConfigs(configs);
+    refreshConfigDropdown(newName);
+    recipeStatus(`Renamed "${oldName}" → "${newName}"`, "ok");
+  }
+  function deleteSelectedConfig(){
+    const name = $("savedConfigs").value;
+    if (!name){ recipeStatus("No config selected to delete.", "warn"); return; }
+    if (!confirm(`Delete config "${name}"?`)) return;
+    const configs = readConfigs();
+    delete configs[name];
+    writeConfigs(configs);
+    refreshConfigDropdown();
+    recipeStatus(`Deleted "${name}"`, "ok");
+  }
+
+  async function copyTextToClipboard(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch(e){
+      try{
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        return true;
+      }catch(e2){ return false; }
+    }
+  }
+
+  async function exportSelectedConfig(){
+    const name = $("savedConfigs").value || normalizeConfigName($("configName").value);
+    if (!name){ recipeStatus("Select a config (or type a name) to export.", "warn"); return; }
+    const configs = readConfigs();
+    const payload = configs[name] || snapshotPayload();
+    const wrapper = { name, exportedAt: new Date().toISOString(), version: APP_VERSION, payload };
+    const ok = await copyTextToClipboard(JSON.stringify(wrapper, null, 2));
+    recipeStatus(ok ? `Copied JSON for "${name}" to clipboard.` : "Could not copy to clipboard.", ok ? "ok" : "warn");
+  }
+
+  function showImportUI(show){
+    $("importArea").style.display = show ? "block" : "none";
+    if (show) $("importJson").focus();
+  }
+
+  function doImport(){
+    const raw = $("importJson").value.trim();
+    if (!raw){ recipeStatus("Paste JSON first.", "warn"); return; }
+    let obj;
+    try{ obj = JSON.parse(raw); }
+    catch(e){ recipeStatus("Invalid JSON.", "bad"); return; }
+
+    let name = normalizeConfigName(obj?.name);
+    let payload = obj?.payload && typeof obj.payload === "object" ? obj.payload : obj;
+
+    if (!name){
+      name = normalizeConfigName(prompt("Name for this imported config:", "Imported config") || "");
+    }
+    if (!name){ recipeStatus("Import canceled (no name).", "warn"); return; }
+
+    const configs = readConfigs();
+    configs[name] = payload;
+    writeConfigs(configs);
+    refreshConfigDropdown(name);
+    $("configName").value = name;
+
+    const loadNow = confirm(`Imported "${name}". Load it now? (This will overwrite current inputs)`);
+    if (loadNow){
+      applyPayload(payload, {rebuildUI:true});
+      saveSession();
+    }
+
+    showImportUI(false);
+    $("importJson").value = "";
+    recipeStatus(`Imported config: "${name}"`, "ok");
+  }
+
+  function getLayerNamesForType(lineType){
+    if (lineType === 1) return ["A"];
+    if (lineType === 5) return ["A","B","C","D","E"];
+    return ["A","B","C"];
+  }
+
+  function buildDefaultStateFromLineType(){
+    const names = getLayerNamesForType(state.lineType);
+
+    const prev = state.layers || [];
+    const prevByName = {};
+    prev.forEach(L => { if (L?.name) prevByName[L.name] = L; });
+
+    state.layers = names.map(name => {
+      const p = prevByName[name];
+      if (p){
+        return {
+          name,
+          layerPct: clampNum(p.layerPct),
+          hoppers: Array.from({length:HOPPERS_PER_LAYER}, (_,i)=>{
+            const h = p.hoppers?.[i] || {};
+            return {
+              pct: clampNum(h.pct),
+              weight: clampNum(h.weight),
+              pumpOff: !!h.pumpOff
+            };
+          })
+        };
+      }
+      return {
+        name,
+        layerPct: 0,
+        hoppers: Array.from({length:HOPPERS_PER_LAYER}, ()=>({pct:0, weight:0, pumpOff:false}))
+      };
+    });
+
+    const nextOffsets = {};
+    names.forEach(n => nextOffsets[n] = clampNum(state.offsets?.[n] ?? 0));
+    state.offsets = nextOffsets;
+  }
+
+  function renderOffsetInputs(){
+    const wrap = $("offsetInputs");
+    wrap.innerHTML = "";
+    state.layers.forEach(L=>{
+      const id = `offset_${L.name}`;
+      const box = document.createElement("div");
+      box.innerHTML = `
+        <label for="${id}">Layer ${L.name} offset (min)</label>
+        <input id="${id}" type="number" min="0" step="1" value="${clampNum(state.offsets[L.name] ?? 0)}" />
+      `;
+      wrap.appendChild(box);
+      box.querySelector("input").addEventListener("input",(e)=>{
+        state.offsets[L.name] = clampNum(e.target.value);
+        validateAndCompute();
+        saveSession();
+      });
+    });
+  }
+
+  function renderLayerInputs(){
+    const wrap = $("layerInputs");
+    wrap.innerHTML = "";
+    const div = state.pctModeDivisor;
+
+    state.layers.forEach((L,i)=>{
+      const id = `layerPct_${i}`;
+      const box = document.createElement("div");
+      box.innerHTML = `
+        <label for="${id}">Layer ${L.name} (${div===100?"%":"fraction"})</label>
+        <input id="${id}" type="number" min="0" step="0.01" value="${L.layerPct}" />
+      `;
+      wrap.appendChild(box);
+      box.querySelector("input").addEventListener("input",(e)=>{
+        L.layerPct = clampNum(e.target.value);
+        validateAndCompute();
+        saveSession();
+      });
+    });
+  }
+
+  function splitId(li, hi){ return `hopperPct_${li}_${hi}`; }
+  function weightId(li, hi){ return `hopperW_${li}_${hi}`; }
+
+  function focusField(li, hi, which){
+    const id = which === "split" ? splitId(li,hi) : weightId(li,hi);
+    const el = document.getElementById(id);
+    if (el){
+      el.focus({preventScroll:true});
+      el.select?.();
+    }
+  }
+
+  function openLayerDetail(layerName){
+    const det = document.getElementById(`layerDetail_${layerName}`);
+    if (det) det.open = true;
+  }
+
+  function renderLayersArea(){
+    const area = $("layersArea");
+    area.innerHTML = "";
+    const div = state.pctModeDivisor;
+
+    state.layers.forEach((L, li)=>{
+      const det = document.createElement("details");
+      det.className = "layer";
+      det.id = `layerDetail_${L.name}`;
+      det.open = li===0;
+
+      const layerPctText = `${fmtNum(L.layerPct,2)}${div===100?"%":""}`;
+      const off = clampNum(state.offsets?.[L.name] ?? 0);
+      const modeText = (div===100) ? "% of layer" : "fraction";
+
+      det.innerHTML = `
+        <summary>
+          <div class="sumLeft">
+            <div class="chev"></div>
+            <div style="min-width:0">
+              <div class="layerTitle">Layer ${L.name}</div>
+              <div class="layerMeta">Split: <span class="mono">${layerPctText}</span> • Offset: <span class="mono">${fmtNum(off,0)}</span> min</div>
+            </div>
+          </div>
+          <span class="pill">Dense</span>
+        </summary>
+        <div class="layerBody">
+          <div class="muted">Enter Split → Enter → Weight → Enter → next Split.</div>
+          <div class="hopperGrid" id="hopperGrid_${li}"></div>
+        </div>
+      `;
+      area.appendChild(det);
+
+      // Mobile-safe details toggle (fixes "won't expand")
+      const sumEl = det.querySelector("summary");
+      sumEl.addEventListener("click", (e) => { e.preventDefault(); det.open = !det.open; });
+      sumEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); det.open = !det.open; }
+      });
+
+      const grid = det.querySelector(`#hopperGrid_${li}`);
+      for (let hi=0; hi<HOPPERS_PER_LAYER; hi++){
+        const pctInputId = splitId(li, hi);
+        const wInputId = weightId(li, hi);
+
+        const tile = document.createElement("div");
+        tile.className = "hopperTile";
+        tile.innerHTML = `
+          <div class="tileHeader">
+            <span class="hopperTag mono">H${hi+1}</span>
+          </div>
+
+          <div>
+            <label for="${pctInputId}">Split</label>
+            <input id="${pctInputId}" inputmode="decimal" type="number" min="0" step="0.01" value="${clampNum(L.hoppers[hi].pct)}" />
+          </div>
+
+          <div>
+            <label for="${wInputId}">Weight (lb)</label>
+            <input id="${wInputId}" inputmode="decimal" type="number" min="0" step="0.01" value="${clampNum(L.hoppers[hi].weight)}" />
+          </div>
+
+          <div class="tileFooter">
+            <span class="mode">${modeText}</span>
+          </div>
+        `;
+        grid.appendChild(tile);
+
+        const pctEl = tile.querySelector(`#${pctInputId}`);
+        const wEl = tile.querySelector(`#${wInputId}`);
+
+        pctEl.addEventListener("input",(e)=>{
+          L.hoppers[hi].pct = clampNum(e.target.value);
+          validateAndCompute();
+          saveSession();
+        });
+        wEl.addEventListener("input",(e)=>{
+          L.hoppers[hi].weight = clampNum(e.target.value);
+          validateAndCompute();
+          saveSession();
+        });
+
+        pctEl.addEventListener("keydown",(e)=>{
+          if (e.key === "Enter"){
+            e.preventDefault();
+            openLayerDetail(L.name);
+            wEl.scrollIntoView({behavior:"smooth", block:"center"});
+            setTimeout(()=>focusField(li, hi, "weight"), 40);
+          }
+        });
+
+        wEl.addEventListener("keydown",(e)=>{
+          if (e.key === "Enter"){
+            e.preventDefault();
+            // move to next hopper split
+            let nli = li, nhi = hi + 1;
+            if (nhi >= HOPPERS_PER_LAYER){ nli = li + 1; nhi = 0; }
+            if (nli >= state.layers.length) return;
+
+            const nextLayerName = state.layers[nli].name;
+            openLayerDetail(nextLayerName);
+            const nextEl = document.getElementById(splitId(nli, nhi));
+            if (nextEl){
+              nextEl.scrollIntoView({behavior:"smooth", block:"center"});
+              setTimeout(()=>focusField(nli, nhi, "split"), 40);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  function validateAndCompute(){
+    const msgs = [];
+    const div = state.pctModeDivisor;
+
+    if (state.lineRate <= 0) msgs.push({type:"warn", text:"Line rate is 0 — rates/times will be 0."});
+
+    const layerFracs = state.layers.map(L => clampNum(L.layerPct)/div);
+    const layerSum = sum(layerFracs);
+    if (state.layers.length){
+      if (Math.abs(layerSum - 1) > 0.0001){
+        msgs.push({type:"warn", text:`Layer split sums to ${div===100 ? fmtNum(layerSum*100,2)+"%" : fmtNum(layerSum,4)} (expected ${div===100?"100%":"1.0"}).`});
+      } else {
+        msgs.push({type:"ok", text:"Layer split sums correctly."});
+      }
+    }
+
+    state.layers.forEach(L=>{
+      const hs = sum(L.hoppers.map(h=>clampNum(h.pct)/div));
+      if (Math.abs(hs - 1) > 0.0001){
+        msgs.push({type:"warn", text:`Layer ${L.name} hopper split sums to ${div===100 ? fmtNum(hs*100,2)+"%" : fmtNum(hs,4)} (expected ${div===100?"100%":"1.0"}).`});
+      }
+    });
+
+    const changeoverDate = parseChangeoverDate(state.changeoverTime);
+    setStatus(statusMessage(msgs));
+
+    // Flatten results
+    const flat = [];
+
+    state.layers.forEach((L, li)=>{
+      const layerRate = state.lineRate * (clampNum(L.layerPct)/div);
+      const offsetMin = clampNum(state.offsets?.[L.name] ?? 0);
+
+      L.hoppers.forEach((h, hi)=>{
+        const hopperRate = layerRate * (clampNum(h.pct)/div);
+        const weight = clampNum(h.weight);
+
+        const entered = hopperEntered(h);
+        const miss = missingFlags(h);
+
+        let minutesToEmpty = null;
+        let totalMinutes = null;
+        let startByDate = null;
+
+        let timeText="—", startByText="—", totalRundownText="—";
+
+        if (hopperRate > 0 && weight > 0){
+          minutesToEmpty = (weight / hopperRate) * 60;
+          totalMinutes = minutesToEmpty + offsetMin;
+
+          timeText = hoursToHHMM(minutesToEmpty/60);
+          totalRundownText = minutesToHHMM(totalMinutes);
+
+          if (changeoverDate){
+            startByDate = new Date(changeoverDate.getTime() - totalMinutes*60*1000);
+            startByText = fmtTime(startByDate, changeoverDate);
+          } else {
+            startByText = "—";
+          }
+        } else if (!entered) {
+          timeText = "Not entered";
+          startByText = "—";
+        } else if (hopperRate <= 0) {
+          timeText = "Not feeding";
+          startByText = "Not feeding";
+        }
+
+        flat.push({
+          layer: L.name,
+          li,
+          hi,
+          hopperLabel: `H${hi+1}`,
+          weight,
+          rate: hopperRate,
+          timeText,
+          startByText,
+          totalRundownText,
+          entered,
+          missingSplit: miss.missingSplit,
+          missingWeight: miss.missingWeight,
+          pumpOff: !!h.pumpOff,
+          minutesToEmpty,
+          totalMinutes,
+          startByDate,
+          offsetMin,
+          layerRate
+        });
+      });
+    });
+
+    renderResultsFlat(flat, changeoverDate);
+    return { flat };
+  }
+
+  function renderResultsFlat(flat, changeoverDate){
+    const area = $("resultsArea");
+    area.innerHTML = "";
+
+    // Filter based on "show all"
+    const filtered = flat.filter(item => state.showAllResults ? true : item.entered);
+
+    if (filtered.length === 0){
+      area.innerHTML = `<div class="muted">No results yet — enter Split &gt; 0 and Weight &gt; 0 for at least one hopper.</div>`;
+      return;
+    }
+
+    // Sort:
+    // If changeoverDate exists: sort by startByDate (earliest first). Items without valid startByDate go last.
+    // Else: sort by minutesToEmpty (soonest first). Items without minutesToEmpty go last.
+    filtered.sort((a,b)=>{
+      if (changeoverDate){
+        const ta = a.startByDate ? a.startByDate.getTime() : Infinity;
+        const tb = b.startByDate ? b.startByDate.getTime() : Infinity;
+        if (ta !== tb) return ta - tb;
+      } else {
+        const ta = (typeof a.minutesToEmpty === "number" && isFinite(a.minutesToEmpty)) ? a.minutesToEmpty : Infinity;
+        const tb = (typeof b.minutesToEmpty === "number" && isFinite(b.minutesToEmpty)) ? b.minutesToEmpty : Infinity;
+        if (ta !== tb) return ta - tb;
+      }
+      // tie-break: layer then hopper
+      if (a.layer !== b.layer) return a.layer.localeCompare(b.layer);
+      return a.hi - b.hi;
+    });
+
+    const list = document.createElement("div");
+    list.className = "resultGrid";
+    area.appendChild(list);
+
+    filtered.forEach((h)=>{
+      const badges = [];
+      if (state.showAllResults && !h.entered){
+        if (h.missingSplit) badges.push(`<span class="pill badge-warn">Missing split</span>`);
+        if (h.missingWeight) badges.push(`<span class="pill badge-warn">Missing weight</span>`);
+      }
+
+      const row = document.createElement("div");
+      row.className = "resultRow" + (h.pumpOff ? " done" : "");
+      row.innerHTML = `
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span class="pill mono">Layer ${h.layer}</span>
+            <span class="pill mono">${h.hopperLabel}</span>
+            <span class="muted mono">${fmtNum(h.weight,2)} lb</span>
+            ${badges.length ? `<span style="display:flex; gap:6px; flex-wrap:wrap;">${badges.join("")}</span>` : ""}
+          </div>
+
+          <div class="meta">
+            Rate: <span class="mono">${fmtNum(h.rate,2)}</span> lb/hr • Offset: <span class="mono">${fmtNum(h.offsetMin,0)}</span> min<br/>
+            Time to empty: <span class="mono">${h.timeText}</span> • Total (empty + offset): <span class="mono">${h.totalRundownText}</span>
+          </div>
+        </div>
+
+        <div style="text-align:right; white-space:nowrap; min-width: 120px;">
+          <div class="muted" style="font-size:12px">${changeoverDate ? "Start by" : "Soonest"}</div>
+          <div style="font-weight:800" class="mono">${changeoverDate ? h.startByText : h.timeText}</div>
+
+          <label class="checkWrap" title="Check when the hopper pump is turned off">
+            <input type="checkbox" ${h.pumpOff ? "checked" : ""} data-li="${h.li}" data-hi="${h.hi}">
+            Pump off
+          </label>
+        </div>
+      `;
+
+      // Wire checkbox
+      const cb = row.querySelector('input[type="checkbox"]');
+      cb.addEventListener("change", (e)=>{
+        const li = Number(e.target.getAttribute("data-li"));
+        const hi = Number(e.target.getAttribute("data-hi"));
+        const checked = !!e.target.checked;
+        if (state.layers?.[li]?.hoppers?.[hi]){
+          state.layers[li].hoppers[hi].pumpOff = checked;
+          saveSession();
+          // re-render results quickly (keeps sort)
+          validateAndCompute();
+        }
+      });
+
+      list.appendChild(row);
+    });
+  }
+
+  function syncShowAllSwitch(){
+    const sw = $("showAllSwitch");
+    sw.classList.toggle("on", state.showAllResults);
+    sw.setAttribute("aria-checked", state.showAllResults ? "true" : "false");
+  }
+  function toggleShowAll(){
+    state.showAllResults = !state.showAllResults;
+    syncShowAllSwitch();
+    validateAndCompute();
+    saveSession();
+  }
+
+  function rebuildUIFromState(){
+    buildDefaultStateFromLineType();
+    renderOffsetInputs();
+    renderLayerInputs();
+    renderLayersArea();
+    syncShowAllSwitch();
+    validateAndCompute();
+  }
+
+  async function copyResultsCSV(){
+    const { flat } = validateAndCompute();
+    const changeoverDate = parseChangeoverDate(state.changeoverTime);
+
+    const header = [
+      "Version","Layer","Hopper",
+      "Weight_lb","Rate_lb_per_hr",
+      "Time_to_empty","Total_with_offset",
+      (changeoverDate ? "Start_by" : "Soonest"),
+      "Pump_off","Entered","Missing_split","Missing_weight"
+    ];
+    const lines = [`# Resin Timer v${APP_VERSION}`, header.join(",")];
+
+    const filtered = flat.filter(item => state.showAllResults ? true : item.entered);
+
+    // keep same sorting as UI
+    filtered.sort((a,b)=>{
+      if (changeoverDate){
+        const ta = a.startByDate ? a.startByDate.getTime() : Infinity;
+        const tb = b.startByDate ? b.startByDate.getTime() : Infinity;
+        if (ta !== tb) return ta - tb;
+      } else {
+        const ta = (typeof a.minutesToEmpty === "number" && isFinite(a.minutesToEmpty)) ? a.minutesToEmpty : Infinity;
+        const tb = (typeof b.minutesToEmpty === "number" && isFinite(b.minutesToEmpty)) ? b.minutesToEmpty : Infinity;
+        if (ta !== tb) return ta - tb;
+      }
+      if (a.layer !== b.layer) return a.layer.localeCompare(b.layer);
+      return a.hi - b.hi;
+    });
+
+    filtered.forEach(h=>{
+      lines.push([
+        APP_VERSION,
+        h.layer,
+        h.hopperLabel,
+        h.weight.toFixed(2),
+        h.rate.toFixed(2),
+        `"${h.timeText}"`,
+        `"${h.totalRundownText}"`,
+        `"${changeoverDate ? h.startByText : h.timeText}"`,
+        h.pumpOff ? "yes" : "no",
+        h.entered ? "yes" : "no",
+        h.missingSplit ? "yes" : "no",
+        h.missingWeight ? "yes" : "no"
+      ].join(","));
+    });
+
+    const csv = lines.join("\n");
+    const ok = await copyTextToClipboard(csv);
+    setStatus(statusMessage([{type: ok ? "ok" : "warn", text: ok ? `Copied CSV (v${APP_VERSION}).` : "Clipboard blocked by browser."}]));
+  }
+
+  function resetAll(){
+    const ok = confirm("Reset all fields?\n\nPress OK to reset.\nPress Cancel to keep current values.");
+    if (!ok) return;
+
+    const clearSaved = confirm("Also clear saved session (autosave) data on this device?");
+    if (clearSaved) clearSession();
+
+    $("lineRate").value = 0;
+    $("changeoverTime").value = "";
+    state.lineRate = 0;
+    state.changeoverTime = "";
+
+    state.layers.forEach(L=>{
+      L.layerPct = 0;
+      state.offsets[L.name] = 0;
+      L.hoppers.forEach(h=>{ h.pct = 0; h.weight = 0; h.pumpOff = false; });
+    });
+
+    state.showAllResults = false;
+
+    rebuildUIFromState();
+    saveSession();
+  }
+
+  // Wire up top-level inputs
+  $("lineRate").addEventListener("input", (e)=>{ state.lineRate = clampNum(e.target.value); validateAndCompute(); saveSession(); });
+
+  $("lineType").addEventListener("change",(e)=>{
+    state.lineType = [1,3,5].includes(Number(e.target.value)) ? Number(e.target.value) : 3;
+    buildDefaultStateFromLineType();
+    rebuildUIFromState();
+    saveSession();
+  });
+
+  $("pctMode").addEventListener("change",(e)=>{
+    state.pctModeDivisor = Number(e.target.value)===1 ? 1 : 100;
+    rebuildUIFromState();
+    saveSession();
+  });
+
+  $("changeoverTime").addEventListener("input",(e)=>{ state.changeoverTime = e.target.value || ""; validateAndCompute(); saveSession(); });
+
+  $("recalcBtn").addEventListener("click", ()=>{ validateAndCompute(); saveSession(); });
+  $("copyBtn").addEventListener("click", copyResultsCSV);
+  $("resetBtn").addEventListener("click", resetAll);
+
+  $("showAllSwitch").addEventListener("click", toggleShowAll);
+  $("showAllSwitch").addEventListener("keydown", (e)=>{
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleShowAll(); }
+  });
+
+  // Recipes
+  $("saveConfigBtn").addEventListener("click", saveNamedConfig);
+  $("loadConfigBtn").addEventListener("click", loadSelectedConfig);
+  $("renameConfigBtn").addEventListener("click", renameSelectedConfig);
+  $("deleteConfigBtn").addEventListener("click", deleteSelectedConfig);
+  $("exportConfigBtn").addEventListener("click", exportSelectedConfig);
+  $("importConfigBtn").addEventListener("click", ()=>showImportUI(true));
+  $("cancelImportBtn").addEventListener("click", ()=>{ showImportUI(false); $("importJson").value=""; });
+  $("doImportBtn").addEventListener("click", doImport);
+
+  // Init
+  (function init(){
+    $("footerVer").textContent = `Resin Timer • v${APP_VERSION}`;
+
+    buildDefaultStateFromLineType();
+
+    const restored = loadSession();
+    if (!restored){
+      rebuildUIFromState();
+    } else {
+      rebuildUIFromState();
+    }
+
+    refreshConfigDropdown();
+    const selVal = $("savedConfigs").value;
+    if (selVal && selVal !== "— none saved —") $("configName").value = selVal;
+
+    saveSession();
+  })();
+</script>
+</body>
+</html>
