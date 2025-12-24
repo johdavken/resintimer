@@ -5,75 +5,77 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 How to use (quick tutorial)
 1) Open the app
 
-Download or clone this repo.
+  Download or clone this repo.
 
-Open index.html in any modern browser (Chrome, Safari, Edge, Firefox).
+  Open index.html in any modern browser (Chrome, Safari, Edge, Firefox).
 
-Works offline after it’s loaded.
+  Works offline after it’s loaded.
 
 2) Line setup
 
-Line rate (lb/hr): Enter total line output.
+  Line rate (lb/hr): Enter total line output.
 
-Line type: Choose 1, 3, or 5 layers.
+  Line type: Choose 1, 3, or 5 layers.
 
-Percent mode: Leave on % unless you prefer fractions.
+  Percent mode: Leave on % unless you prefer fractions.
 
-Changeover time (optional): Set a deadline time (e.g., 16:00).
+  Changeover time (optional): Set a deadline time (e.g., 16:00).
 
-If set, Results sort by Start by.
+  If set, Results sort by Start by.
 
-If blank, Results sort by Time to empty.
+  If blank, Results sort by Time to empty.
 
-Downcomer offset (minutes): Enter a per-layer offset to account for downcomer run-down time.
+  Downcomer offset (minutes): Enter a per-layer offset to account for downcomer run-down time.
 
-Offset is added to the calculated run-down time.
+  Offset is added to the calculated run-down time.
 
-For line 9, leave at 0.
+  For line 9, leave at 0.
 
 3) Layer split
 
-Enter the % of total line rate assigned to each layer (should total 100%).
+  Enter the % of total line rate assigned to each layer (should total 100%).
 
-Example (3-layer): A=20, B=60, C=20
+  Example (3-layer): A=20, B=60, C=20
 
 4) Hopper splits + weights (per layer)
 
-For each layer:
+  For each layer:
 
-Enter each hopper Split (% of that layer, should total 100%).
+  Enter each hopper Split (% of that layer, should total 100%).
 
-Enter each hopper Weight (lb) (current resin in hopper).
+  Enter each hopper Weight (lb) (current resin in hopper).
 
-Tip: faster entry using Enter:
+  Tip: faster entry using Enter:
 
-Split → Weight → next Split
+  Split → Weight → next Split
 
 5) Results
 
-Results display a single combined list, sorted by the most urgent hopper.
+  Results display a single combined list, sorted by the most urgent hopper.
 
-Each result includes:
+  Each result includes:
 
-Hopper rate (lb/hr)
+  Hopper rate (lb/hr)
 
-Time to empty
+  Time to empty
 
-Total time (empty + downcomer offset)
+  Total time (empty + downcomer offset)
 
-If changeover is set: Start by time
+  If changeover is set: Start by time
 
-Check Pump off when you’ve shut that hopper’s pump off — the row fades/greys out.
+  Check Pump off when you’ve shut that hopper’s pump off — the row fades/greys out.
 
 6) Recipes (named configs)
 
-Type a Config name → click Save / Update config.
+  Type a Config name → click Save / Update config.
 
-Export copies a JSON recipe you can share.
+  Export copies a JSON recipe you can share.
 
-Import pastes a JSON recipe and can load it.
+  Import pastes a JSON recipe and can load it.
 
-Notes
+  
+  
+  Notes
 
 Resin Timer autosaves locally in your browser (no network required).
 
