@@ -1,45 +1,44 @@
+# Resin Timer 
 
-
-# Description
+## Description
 
 Resin Timer is a lightweight, mobile-friendly, offline web app for blown film lines. Enter line rate, layer splits, hopper splits, and hopper weights to calculate time-to-empty and (optionally) “start by” times before a changeover—plus per-layer downcomer offsets. Results are sorted by the most urgent hopper and include a Pump Off checklist to track progress.
 
-# How to use (quick tutorial)
-1) Open the app
+## How to use (quick tutorial)
+**1) Open the app**
+- Download or clone this repo.
 
-  - Download or clone this repo.
+- Open resin-timer-0_0##.html in any modern browser (Chrome, Safari, Edge, Firefox).
 
-  - Open resin-timer-0_0##.html in any modern browser (Chrome, Safari, Edge, Firefox).
+- Works offline after it’s loaded.
 
-  - Works offline after it’s loaded.
+**2) Line setup**
 
-2) Line setup
+- Line rate (lb/hr): Enter total line output. (e.g., 1200)
 
-  Line rate (lb/hr): Enter total line output. (e.g., 1200)
+- Line type: Choose 1, 3, or 5 layers.
 
-  Line type: Choose 1, 3, or 5 layers.
+- Percent mode: Leave on % unless you prefer fractions.
 
-  Percent mode: Leave on % unless you prefer fractions.
+- Changeover time (optional): Set a deadline time (e.g., 4:00PM).
 
-  Changeover time (optional): Set a deadline time (e.g., 4:00PM).
+- If set, Results sort by Start by.
 
-  If set, Results sort by Start by.
+- If blank, Results sort by Time to empty.
 
-  If blank, Results sort by Time to empty.
+- Downcomer offset (minutes): Enter a per-layer offset to account for downcomer run-down time.
 
-  Downcomer offset (minutes): Enter a per-layer offset to account for downcomer run-down time.
+- Offset is added to the calculated run-down time.
 
-  Offset is added to the calculated run-down time.
+- For line 9, leave at 0.
 
-  For line 9, leave at 0.
-
-3) Layer split
+**3) Layer split**
 
   Enter the % of total line rate assigned to each layer (should total 100%).
 
   Example (3-layer): A=20, B=60, C=20
 
-4) Hopper splits + weights (per layer)
+**4) Hopper splits + weights (per layer)**
 
   For each layer:
 
@@ -51,7 +50,7 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
   Split → Weight → next Split
 
-5) Results
+**5) Results**
 
   Results display a single combined list, sorted by the most urgent hopper.
 
@@ -67,7 +66,7 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
   Check Pump off when you’ve shut that hopper’s pump off — the row fades/greys out.
 
-6) Recipes (named configs)
+**6) Recipes (named configs)**
 
   Type a Config name → click Save / Update config.
 
@@ -77,7 +76,7 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
   
   
-  Notes
+  **Notes**
 
 Resin Timer autosaves locally in your browser (no network required).
 
