@@ -41,6 +41,8 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 - Example (3-layer): A=20, B=60, C=20
 
+ ![Line Setup Screen](screenshots/hoppersplits.png)
+
 **4) Hopper splits + weights (per layer)**
 
 - For each layer:
@@ -52,6 +54,8 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 - Tip: faster entry using Enter:
 
 - Split → Weight → next Split
+
+![Line Setup Screen](screenshots/results.png)
 
 **5) Results**
 
