@@ -16,7 +16,9 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 **1) Open the app**
 - Download or clone this repo.
 
-- Open resin-timer-0_0##.html in any modern browser (Chrome, Safari, Edge, Firefox).
+- Open  resin-timer-0_10.html in any modern browser (Chrome, Safari, Edge, Firefox).
+
+-  If using the Android APK, download to your phone and install. 
 
 - Works offline after it’s loaded.
 
