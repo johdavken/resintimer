@@ -68,6 +68,8 @@ For each layer:
 
 - Keep in mind that stored hopper weight can vary by however much is added when the hopper calls for resin. (target known minimum to avoid running out early)
 
+- Entering weights can be tedious, but you only do it once. Save your config. 
+
 ![Line Setup Screen](screenshots/results.png)
 
 **5) Results**
