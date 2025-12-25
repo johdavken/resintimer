@@ -13,7 +13,7 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 - Works offline after it’s loaded.
 
 
-![Line Setup Screen](Screenshot_20251224_095703.png)
+![Line Setup Screen](screenshots/linesetup.png)
 
 **2) Line setup**
 
