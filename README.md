@@ -1,6 +1,8 @@
 # Resin Timer 
 
-Currently available as a standalone HTML file usable on any device
+- 📱 **Android App (APK)**  
+  Download the latest Android release:  
+  [https://github.com/yourname/resintimer/releases/latest](https://github.com/johdavken/resintimer/releases/tag/v01.09)
 
 Android APK (requires sideload)
 
