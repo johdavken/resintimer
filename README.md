@@ -85,7 +85,7 @@ Each result includes:
 
 - Import pastes a JSON recipe and can load it.
 
-- Keep a default save for your line to avoid having to add hopper weights each time. Adjust them over time if needed to improve timing. (if you run out early, add weight to compensate for next time)
+- Keep a default save for your line to avoid having to add hopper weights each time. Adjust them over time if needed to improve timing. (if you run out early, subtract weight to compensate for next time)
 
   
   
