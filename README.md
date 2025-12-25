@@ -29,11 +29,11 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 - If blank, Results sort by Time to empty.
 
-- Downcomer offset (minutes): Enter a per-layer offset to account for downcomer run-down time.
+- Downcomer offset (minutes): This is the time it takes to run down the amount of resin in the downcomer/mixer. 
 
 - Offset is added to the calculated run-down time.
 
-- For line 9, leave at 0.
+- For line 9 you can effectively leave at 0.
 
 **3) Layer split**
 
@@ -45,9 +45,9 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 **4) Hopper splits + weights (per layer)**
 
-- For each layer:
+For each layer:
 
-- Enter each hopper Split (% of that layer, should total 100%).
+- Enter each hopper Split (% of that layer).
 
 - Enter each hopper Weight (lb) (current resin in hopper).
 
@@ -55,13 +55,17 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 - Split → Weight → next Split
 
+- You only need to input the splits for the hoppers you wish to track.
+
+- Keep in mind that stored hopper weight can vary by however much is added when the hopper calls for resin. (target known minimum to avoid running out early)
+
 ![Line Setup Screen](screenshots/results.png)
 
 **5) Results**
 
-- Results display a single combined list, sorted by the most urgent hopper.
+Results display a single combined list, sorted by the most urgent hopper.
 
-- Each result includes:
+Each result includes:
 
 - Hopper rate (lb/hr)
 
@@ -81,10 +85,13 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 - Import pastes a JSON recipe and can load it.
 
+- Keep a default save for your line to avoid having to add hopper weights each time. Adjust them over time if needed to improve timing. (if you run out early, add weight to compensate for next time)
+
   
   
 **Notes**
 
 Resin Timer autosaves locally in your browser (no network required).
+Need to track multiple lines? I keep a copy active in different browsers (Chrome and Firefox)
 
 “Show all hoppers” reveals incomplete entries with warning badges.
