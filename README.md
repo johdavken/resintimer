@@ -2,9 +2,11 @@
 
 - 📱 **Android App (APK)**  
   Download the latest Android release:  
-  [https://github.com/yourname/resintimer/releases/latest](https://github.com/johdavken/resintimer/releases/tag/v01.09)
+  [APK Release](https://github.com/johdavken/resintimer/releases/tag/v01.09)
 
-Android APK (requires sideload)
+🌐 **Web / HTML Version**  
+  Download or open the HTML version:  
+  [HTML Release](https://github.com/johdavken/resintimer/releases/tag/resintimerhtml)
 
 ## Description
 
