@@ -1,6 +1,7 @@
 # Resin Timer 
 
 Currently available as a standalone HTML file usable on any device
+
 Android APK (requires sideload)
 
 ## Description
