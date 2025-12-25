@@ -1,5 +1,8 @@
 # Resin Timer 
 
+Currently available as a standalone HTML file usable on any device
+Android APK (requires sideload)
+
 ## Description
 
 Resin Timer is a lightweight, mobile-friendly, offline web app for blown film lines. Enter line rate, layer splits, hopper splits, and hopper weights to calculate time-to-empty and (optionally) “start by” times before a changeover—plus per-layer downcomer offsets. Results are sorted by the most urgent hopper and include a Pump Off checklist to track progress.
