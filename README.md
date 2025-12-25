@@ -43,7 +43,6 @@ Resin Timer is a lightweight, mobile-friendly, offline web app for blown film li
 
 - Offset is added to the calculated run-down time.
 
-- For line 9 you can effectively leave at 0.
 
 **3) Layer split**
 
