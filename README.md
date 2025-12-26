@@ -7,7 +7,7 @@
 
 🌐 **Web / HTML Version**  
   Download or open the HTML version:  
-  [HTML Release](https://github.com/johdavken/resintimer/releases/tag/resintimerhtml)
+  [HTML Release](https://github.com/johdavken/resintimer/releases/tag/resintimerwithcalc)
 
 ## Description
 
