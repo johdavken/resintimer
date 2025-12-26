@@ -1,8 +1,6 @@
 
 ![ResinTimer](screenshots/resintimersmall.png)
 
-# Resin Timer 
-
 📱 **Android App (APK)**  
   Download the latest Android release:  
   [APK Release](https://github.com/johdavken/resintimer/releases/tag/v01.09)
