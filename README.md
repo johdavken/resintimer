@@ -1,5 +1,5 @@
 
-![ResinTimer](screenshots/iconforapp.png)
+![ResinTimer](screenshots/iconforapp2.png)
 
 # Resin Timer 
 
