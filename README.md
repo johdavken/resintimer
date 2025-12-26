@@ -1,3 +1,6 @@
+
+![ResinTimer](screenshots/iconforapp.png)
+
 # Resin Timer 
 
 📱 **Android App (APK)**  
