@@ -1,5 +1,5 @@
 
-![ResinTimer](screenshots/resintimersmall.png)
+# Resin Timer
 
 📱 **Android App (APK)**  
   Download the latest Android release:  
