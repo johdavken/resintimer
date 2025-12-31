@@ -6,7 +6,7 @@
   [APK Release](https://github.com/johdavken/resintimer/releases/tag/v01.09)
 
 🌐 **Web / HTML Version**  
-  [[HTML Release](https://johdavken.github.io/)
+  [HTML Release](https://johdavken.github.io/)
 
 ## Description
 
